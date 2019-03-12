@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:gfe="http://www.springframework.org/schema/gemfire"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
+		http://www.springframework.org/schema/gemfire http://www.springframework.org/schema/gemfire/spring-gemfire-2.0.xsd">
+
+	
+	<gfe:client-cache id="cache" pdx-read-serialized="false"
+		pool-name="pool1" pdx-serializer-ref="pdxSerializer" />
+
+	<gfe:pool id="pool1" read-timeout="10000">
+		<gfe:locator host="${GEMFIRE_LOCATOR_2_HOST}" port="${GEMFIRE_LOCATOR_2_PORT}" />
+	</gfe:pool>
+	
+
+	<gfe:client-region id="customerRegion" name="customer" 
+		cache-ref="cache" pool-name="pool1" shortcut="PROXY" />
+
+	<bean id="pdxSerializer" class="org.apache.geode.pdx.ReflectionBasedAutoSerializer">
+		<constructor-arg>
+			<util:list value-type="java.lang.String">
+				<value>io.pivotal.pde.sample.*</value>
+			</util:list>
+		</constructor-arg>
+	</bean>
+	
+	
+</beans>

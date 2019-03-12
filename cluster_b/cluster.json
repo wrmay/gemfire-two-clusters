@@ -54,7 +54,9 @@
                  "datanode2" : {
                      "type" : "datanode",
                      "tcp-port" : 20002,
-                     "server-port" : 20200
+                     "server-port" : 20200,
+                     "start-dev-rest-api": "true",
+                        "http-service-port" : 20080
                     }
              }
         }
