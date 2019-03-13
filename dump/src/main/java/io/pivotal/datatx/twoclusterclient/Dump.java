@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.geode.cache.Region;
+import org.apache.geode.pdx.PdxInstance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +19,13 @@ import io.pivotal.pde.sample.Person;
 
 @SpringBootApplication
 @Component
-@ImportResource({"classpath*:gemfire-context.xml"})
+@ImportResource({"classpath*:gem-context.xml"})
 public class Dump {
 	private static Logger log = LogManager.getLogger(Dump.class);
 
 	@Autowired
 	@Qualifier("customerRegion")
-	Region<Integer,Person> customerRegion;
+	Region<String,PdxInstance> customerRegion;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(Dump.class, args);
@@ -33,9 +34,9 @@ public class Dump {
 	@PostConstruct
 	void init(){
 		
-		Set<Integer> keys = customerRegion.keySetOnServer();
-		for(Integer k: keys){
-			Person p = customerRegion.get(k);
+		Set<String> keys = customerRegion.keySetOnServer();
+		for(String k: keys){
+			Person p =  (Person) customerRegion.get(k).getObject();
 			log.info("read {} {}",p.getFirstName(),p.getLastName());
 		}
 		

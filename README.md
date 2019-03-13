@@ -179,8 +179,6 @@ This option has the advantage of working even when you are using PDX serializati
 </beans>
 ```
 
-
-
 Only one of the two clusters is declared.  The second cluster is accessed via the REST API.  *Note that read-serialized is set to true* so that a get on the first cluster will return a PDXInstance.   The java snippet below illustrates calling the REST API on the second cluster to put a "Person" object that has been retrieved as a PDX instance.
 
 ```java
@@ -188,7 +186,8 @@ public void put(String region, Object key, PdxInstance value){
 	String postURL = String.format("%s/v1/%s", baseURL,region);
 	log.info("POST TO " + postURL);
 		
-    String body = JSONFormatter.toJSON(value); 
+	TypePreservingPdxToJSON converter = new TypePreservingPdxToJSON(value);
+    String body = JSONFormatter.toJSON(converter.getJSON()); 
 	log.info("BODY: " + body);
 		
 	try {
@@ -211,7 +210,14 @@ public void put(String region, Object key, PdxInstance value){
 	}
 ```
 
-The key part is using GemFire's JSONFormatter to create the body for the REST call.  This ensures that other GemFire clients, including Java clients using the Person POJO,  will be able to access data in the second cluster.
+The key part is using the TypePreservingPdxtoJSON class ( availabe in `two-cluster-client-3a`) to create the body for the REST call.  This ensures that other GemFire clients, including Java clients using the Person POJO,  will be able to access data in the second cluster.
+
+#### Caveats
+
+There are some caveats that apply to interoperation between REST data and java POJOS.  For details, see http://gemfire.docs.pivotal.io/97/geode/rest_apps/rest_prereqs.html.  The most significant points are:
+
+- keys that are PUT via the REST API will be turned into Strings regardless of the original type.
+- When retrieved into a Java client, POJOs written via REST will be of type PdxInstance _even if the client has set read-serialized=false_.  The original object can be retrieved with `pdxInst.getObject()`.  This is illustrated in the `dump` project.
 
 ## Summary
 

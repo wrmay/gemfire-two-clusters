@@ -2,6 +2,7 @@ package io.pivotal.datatx.twoclusterclient;
 
 import org.apache.geode.pdx.JSONFormatter;
 import org.apache.geode.pdx.PdxInstance;
+import org.apache.geode.pdx.WritablePdxInstance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,7 +25,8 @@ public class RESTClient {
 		String postURL = String.format("%s/v1/%s", baseURL,region);
 		log.info("POST TO " + postURL);
 		
-		String body = JSONFormatter.toJSON(value); 
+		TypePreservingPdxToJSON converter = new TypePreservingPdxToJSON(value);
+		String body = converter.getJSON();
 		log.info("BODY: " + body);
 		
 		try {

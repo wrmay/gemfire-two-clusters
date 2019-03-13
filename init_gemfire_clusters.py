@@ -4,6 +4,9 @@ import os.path
 import sys
 import shutil
 
+#
+# This is a script for cleaning up and setting up the 2 clusters 
+#
 
 if __name__ == '__main__':
     if 'GEMFIRE' not in os.environ:
